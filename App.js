@@ -9,26 +9,53 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  Keyboard,
 } from "react-native";
 import Task from "./components/Task";
 
 export default function App() {
-  const [task, setTask] = useState([]);
+  const [task, setTask] = useState();
+  const [taskItems, setTaskItems] = useState([]);
+
+  const handleAddTask = () => {
+    setTaskItems([...taskItems, task]);
+    setTask(null);
+    Keyboard.dismiss();
+    alert("Success");
+  };
+
+  const completeTask = (index) => {
+    let itemsCopy = [...taskItems];
+    itemsCopy.splice(index, 1);
+    setTaskItems(itemsCopy);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.taskContainer}>
         <Text style={styles.title}>Today's Tasks</Text>
         <View style={styles.items}>
+          {taskItems.map((item, index) => {
+            return (
+              <TouchableOpacity key={index} onPress={completeTask}>
+                <Task text={item} />
+              </TouchableOpacity>
+            );
+          })}
           <Task text="task1" />
           <Task text="task2" />
         </View>
       </View>
       <KeyboardAvoidingView style={styles.textbox}>
-        <TextInput placeholder="write a task" style={styles.inputbox} />
-        <TouchableOpacity>
+        <TextInput
+          placeholder="write a task"
+          style={styles.inputbox}
+          value={task}
+          onChangeText={(text) => setTask(text)}
+        />
+        <TouchableOpacity onPress={() => handleAddTask()}>
           <View style={styles.addButton}>
-            <Text>+</Text>
+            <Text style={styles.plusButton}>+</Text>
           </View>
         </TouchableOpacity>
       </KeyboardAvoidingView>
@@ -78,5 +105,9 @@ const styles = StyleSheet.create({
     borderColor: "grey",
     borderWidth: 1,
     borderRadius: 50,
+  },
+  plusButton: {
+    fontWeight: "bold",
+    fontSize: 25,
   },
 });
